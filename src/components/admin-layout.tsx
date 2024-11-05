@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   Package2Icon,
@@ -28,7 +28,6 @@ import {
   UsersIcon,
   ShoppingBagIcon,
 } from "lucide-react";
-import { useRouter } from "next/router";
 
 const pageNames: { [key: string]: string } = {
   "/admin": "Dashboard",
@@ -83,8 +82,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             {/*<DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>*/}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => redirect('/logout')}>
-             Logout 
+            <DropdownMenuItem>
+              <Link href="/logout">Logout</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

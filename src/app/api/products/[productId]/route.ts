@@ -65,7 +65,7 @@ export async function DELETE(
     .select('*', { count: 'exact', head: true })
     .eq('product_id', productId)
 
-  if (count > 0) {
+  if (count && count > 0) {
     return NextResponse.json({ error: 'Product with existing orders cannot be deleted.' }, { status: 500 })
   } else {
     const { error } = await supabase

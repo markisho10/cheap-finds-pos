@@ -185,28 +185,26 @@ export default function Products() {
         console.error("Failed to delete product");
         toast.error(errorResponse.error);
         setIsDeleteConfirmationOpen(false);
-        console.log()
       }
     } catch (error) {
       console.error("Error deleting product:", error);
-      toast.error(error)
     }
   }, [productToDelete, products]);
 
   const renderBarcodeCards = () => {
-    let card = []
+    let card: any[] = []
     for(let i = 0; i < productInStock; i++) {      
         card = [
           ...card,
           (
-            <div class="barcode-card">
+            <div className="barcode-card" key={i}>
               <p>
                 <strong>{BARCODE_TITLE}</strong>
               </p>
               <p>{productName}</p>
               <p>
                 <strong>{`Price: `}</strong>
-                {CURRENCY.PHP}{parseInt(productPrice).toFixed(2)}
+                {CURRENCY.PHP}{productPrice.toFixed(2)}
               </p>
               <Barcode 
                 width={1.6} 
@@ -336,13 +334,14 @@ export default function Products() {
                     All Categories
                   </DropdownMenuCheckboxItem>
 
-                  {categories.map((item) => (
+                  {categories.map((item, index) => (
 
                       <DropdownMenuCheckboxItem
-                      checked={filters.category === item.name}
-                      onCheckedChange={() =>
-                        handleFilterChange("category", item.name)
-                      }
+                        key={index}
+                        checked={filters.category === item.name}
+                        onCheckedChange={() =>
+                          handleFilterChange("category", item.name)
+                        }
                     >
                       {item.value}
                     </DropdownMenuCheckboxItem>
@@ -529,8 +528,8 @@ export default function Products() {
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((item) => (
-                    <SelectItem value={item.name}>{item.value}</SelectItem>
+                  {categories.map((item, index) => (
+                    <SelectItem key={index} value={item.name}>{item.value}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -569,7 +568,7 @@ export default function Products() {
             {
               (!isAddProductDialogOpen)
               ? (
-                <Button onClick={reactToPrintFn}>Print Barcode</Button>
+                <Button onClick={() => reactToPrintFn()}>Print Barcode</Button>
               ) : (
                 <></>
               )

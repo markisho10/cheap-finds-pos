@@ -43,7 +43,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background">
       <div className="mx-auto w-full max-w-md space-y-6">
         <div className="flex flex-col items-center space-y-2">
-          <Image src="/logo.jpg" width={100} height={100} />
+          <Image alt="Logo" src="/logo.jpg" width={100} height={100} />
           <h2 className="text-2xl font-bold">Cheap Finds</h2>
           <h3 className="text-1xl font-bold">Point of sale</h3>
           <p className="text-muted-foreground">

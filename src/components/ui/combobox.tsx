@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 
 interface ComboboxProps {
-  items: { id: number | string; name: string }[];
+  items: { id: number | string; name: string; in_stock?: number; }[];
   placeholder: string;
   onSelect: (id: number | string) => void;
   noSelect?: boolean;
@@ -74,7 +74,7 @@ export function Combobox({ items, placeholder, onSelect, noSelect, className }: 
                 >
                   {item.name}
                   {
-                    (item && item.in_stock == 0) 
+                    (item.in_stock && item.in_stock == 0) 
                     ? (
                       <span className="stock-indicator">
                         Out of Stock

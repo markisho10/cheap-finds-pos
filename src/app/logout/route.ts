@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation';
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -7,7 +8,7 @@ export async function GET(request: Request) {
   if (session) {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      return res.status(400).json({ message: 'Failed to log out.' });
+      return NextResponse.json({ error: 'Failed to log out.' }, { status: 400 });
     } else {
       redirect('/error')
     }

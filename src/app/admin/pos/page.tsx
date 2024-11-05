@@ -21,6 +21,7 @@ type Product = {
   id: number;
   name: string;
   price: number;
+  in_stock: number;
 };
 
 type Customer = {
@@ -220,11 +221,11 @@ export default function POSPage() {
                   <TableCell>
                     <div className="w-[100px] p-1 border rounded">
                       <InputNumber
-                        min="1"
+                        min={1}
                         max={product.in_stock}
                         value={product.quantity || 1}
-                        onChange={(value) => {
-                          const qty = parseInt(value);
+                        onChange={(value: any) => {
+                          const qty = parseInt(value as string);
                           if (qty <= product.in_stock) {
                             handleQuantityChange(
                               product.id,
