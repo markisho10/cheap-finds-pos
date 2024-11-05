@@ -31,7 +31,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { EllipsisVerticalIcon, Loader2Icon } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, SyntheticEvent } from "react";
 import { formatDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
@@ -41,6 +41,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DateRangePicker } from 'rsuite';
+import { DateRange } from "rsuite/esm/DateRangePicker";
 
 type TransactionType = "income" | "expense";
 
@@ -68,6 +70,12 @@ export default function Cashier() {
     amount: 0,
     status: "completed",
   });
+  const yesterDate = new Date();
+  yesterDate.setDate(yesterDate.getDate() - 3);
+  const [ dateValues, setDateValues] = useState<any>([
+    yesterDate,
+    new Date()
+  ]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -126,10 +134,21 @@ export default function Cashier() {
     }
   }, [transactionToDelete, transactions]);
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
+  const fetchTransactions = async () => {
+      setLoading(true);
       try {
-        const response = await fetch("/api/transactions");
+        console.log(dateValues);
+        const [startDate, endDate] = dateValues;
+        const params = new URLSearchParams({
+          'startDate': startDate.toISOString(),
+          'endDate': endDate.toISOString(),
+        });
+        const response = await fetch(`/api/transactions?${params}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch transactions");
         }
@@ -141,6 +160,8 @@ export default function Cashier() {
         setLoading(false);
       }
     };
+
+  useEffect(() => {
 
     fetchTransactions();
   }, []);
@@ -159,6 +180,14 @@ export default function Cashier() {
         <CardHeader>
           <CardTitle>Cashier Transactions</CardTitle>
           <CardDescription>Manage your cashier transactions.</CardDescription>
+          <CardDescription style={{display: 'flex', flexDirection: 'row', gap: '10px'}}>
+            <DateRangePicker 
+              value={dateValues}
+              onChange={setDateValues}
+              format="MMM dd yyyy" character=" – "
+            />
+            <Button onClick={fetchTransactions}>Filter</Button>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
