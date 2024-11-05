@@ -46,7 +46,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
   const [ email, setEmail ] = useState<string>('');
   supabase.auth.getSession().then((data) => {
-    setEmail(data.data.session?.user.email)
+    setEmail(data.data.session?.user.email || '')
   });
   
   return (

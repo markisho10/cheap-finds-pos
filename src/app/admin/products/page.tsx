@@ -254,12 +254,12 @@ export default function Products() {
       }
       if (
         filters.inStock !== "all" &&
-        filters.inStock !== "in-stock" &&
         filters.inStock === "out-of-stock" &&
-        product.in_stock === 0
+        product.in_stock > 0
       ) {
         return false;
       }
+      
      
       return ( 
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -515,7 +515,7 @@ export default function Products() {
                 In Stock
               </Label>
               <InputNumber
-                min={1}
+                min={0}
                 max={999}
                 maxLength={3}
                 value={productInStock}
