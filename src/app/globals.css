@@ -96,6 +96,12 @@
     font-size: 11px;
     color: #ffffff
   }
+  .logout-link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+  }
 }
 
 @layer base {

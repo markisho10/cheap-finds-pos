@@ -27,7 +27,10 @@ import {
   ShoppingCartIcon,
   UsersIcon,
   ShoppingBagIcon,
+  LogOut,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
 
 const pageNames: { [key: string]: string } = {
   "/admin": "Dashboard",
@@ -40,7 +43,12 @@ const pageNames: { [key: string]: string } = {
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
+  const supabase = createClient();
+  const [ email, setEmail ] = useState<string>('');
+  supabase.auth.getSession().then((data) => {
+    setEmail(data.data.session?.user.email)
+  });
+  
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4">
@@ -79,11 +87,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuLabel style={{fontWeight: 400}}>{email}</DropdownMenuLabel>
             {/*<DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>*/}
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href="/logout">Logout</Link>
+              <Link href="/logout" className="logout-link">
+                <span>Logout</span>
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

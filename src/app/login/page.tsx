@@ -35,7 +35,7 @@ export default function LoginPage() {
     });
     const res = (await response.json());
     if (response.ok) {
-      router.push('/admin')
+      router.replace('/admin')
     } else {
       setDisableBtn(false);
       toast.error(res.message);

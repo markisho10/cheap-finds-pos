@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     if (error) {
       return NextResponse.json({ error: 'Failed to log out.' }, { status: 400 });
     } else {
-      redirect('/error')
+      redirect('/login')
     }
   }
   return NextResponse.json({})
