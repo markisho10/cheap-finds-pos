@@ -57,6 +57,7 @@ import Barcode from 'react-barcode';
 import { generateBarcodeNumbers } from "@/lib/utils";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
+import { InputNumber } from "rsuite";
 
 interface Product {
   id: number;
@@ -204,7 +205,7 @@ export default function Products() {
               <p>{productName}</p>
               <p>
                 <strong>{`Price: `}</strong>
-                {CURRENCY.PHP}{productPrice.toFixed(2)}
+                {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(productPrice)}
               </p>
               <Barcode 
                 width={1.6} 
@@ -496,11 +497,14 @@ export default function Products() {
               <Label htmlFor="price" className="text-right">
                 Price
               </Label>
-              <Input
-                id="price"
-                type="number"
+              <InputNumber
+                min={1}
+                max={999999}
+                maxLength={6}
                 value={productPrice}
-                onChange={(e) => setProductPrice(Number(e.target.value))}
+                onChange={(value: any) => {
+                  setProductPrice(value)
+                }}
                 className="col-span-3"
               />
             </div>
@@ -508,11 +512,14 @@ export default function Products() {
               <Label htmlFor="in_stock" className="text-right">
                 In Stock
               </Label>
-              <Input
-                id="in_stock"
-                type="number"
+              <InputNumber
+                min={1}
+                max={999}
+                maxLength={3}
                 value={productInStock}
-                onChange={(e) => setProductInStock(Number(e.target.value))}
+                onChange={(value: any) => {
+                  setProductInStock(value)
+                }}
                 className="col-span-3"
               />
             </div>
