@@ -11,15 +11,17 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [ disableBtn, setDisableBtn ] = useState<boolean>(false);
 
   const submitForm = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setDisableBtn(true);
     const formData = new FormData(event.currentTarget)
     const response = await fetch("/auth/login", {
       method: "POST",
@@ -35,6 +37,7 @@ export default function LoginPage() {
     if (response.ok) {
       router.push('/admin')
     } else {
+      setDisableBtn(false);
       toast.error(res.message);
     }
   }
@@ -70,7 +73,7 @@ export default function LoginPage() {
               >
                 Forgot password?
               </Link>*/}
-              <Button type="submit">Log in</Button>
+              <Button type="submit" disabled={disableBtn}>Log in</Button>
               {/*<Button formAction={signup}>Sign up</Button>*/}
             </CardFooter>
           </form>
