@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/table";
 import { Combobox } from "@/components/ui/combobox";
 import { Button } from "@/components/ui/button";
-import { CURRENCY } from "@/app/global";
 import { toast } from "react-toastify";
 import { InputNumber } from 'rsuite';
 
@@ -217,7 +216,7 @@ export default function POSPage() {
               {selectedProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>{product.name}</TableCell>
-                  <TableCell>{CURRENCY.PHP}{product.price.toFixed(2)}</TableCell>
+                  <TableCell>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(product.price)}</TableCell>
                   <TableCell>
                     <div className="w-[100px] p-1 border rounded">
                       <InputNumber
@@ -237,7 +236,7 @@ export default function POSPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {CURRENCY.PHP}{((product.quantity || 1) * product.price).toFixed(2)}
+                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(((product.quantity || 1) * product.price))}
                   </TableCell>
                   <TableCell>
                     <Button
@@ -252,8 +251,8 @@ export default function POSPage() {
               ))}
             </TableBody>
           </Table>
-          <div className="mt-4 text-right">
-            <strong>Total: {CURRENCY.PHP}{total.toFixed(2)}</strong>
+          <div className="mt-4 text-lg text-right">
+            <strong>Total: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(total)}</strong>
           </div>
           <div className="mt-4">
             <Button onClick={handleCreateOrder} disabled={selectedProducts.length === 0 || !selectedCustomer || !paymentMethod}>

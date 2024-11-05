@@ -41,7 +41,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CURRENCY } from "@/app/global";
 
 type TransactionType = "income" | "expense";
 
@@ -188,7 +187,7 @@ export default function Cashier() {
                     <Badge variant={transaction.type}>{transaction.type}</Badge>
                   </TableCell>
                   <TableCell>{formatDate(transaction.created_at)}</TableCell>
-                  <TableCell>{CURRENCY.PHP}{transaction.amount.toFixed(2)}</TableCell>
+                  <TableCell>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(transaction.amount)}</TableCell>
                   <TableCell>
                     <Badge
                       variant={

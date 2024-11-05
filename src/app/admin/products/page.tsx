@@ -52,7 +52,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BARCODE_TITLE, categories, CURRENCY } from "@/app/global";
+import { BARCODE_TITLE, categories } from "@/app/global";
 import Barcode from 'react-barcode';
 import { generateBarcodeNumbers } from "@/lib/utils";
 import { useReactToPrint } from "react-to-print";
@@ -408,7 +408,7 @@ export default function Products() {
                       {product.name}
                     </TableCell>
                     <TableCell>{product.description}</TableCell>
-                    <TableCell>{CURRENCY.PHP}{product.price.toFixed(2)}</TableCell>
+                    <TableCell>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(product.price)}</TableCell>
                     <TableCell>{product.in_stock}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

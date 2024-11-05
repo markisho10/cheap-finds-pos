@@ -1,7 +1,3 @@
-export enum CURRENCY {
-	PHP = '₱',
-	USD = '$',
-}
 export const BARCODE_TITLE = 'ALWAYSWEARME';
 
 export const categories = [
