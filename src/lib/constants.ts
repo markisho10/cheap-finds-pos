@@ -169,3 +169,5 @@ export const paymentMethods = [
   { id: "debit-card", name: "Debit Card" },
   { id: "cash", name: "Cash" },
 ];
+
+export const defaultTimeZone = 'Asia/Manila';

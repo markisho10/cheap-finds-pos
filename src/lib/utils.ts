@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { defaultTimeZone } from './constants';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -8,9 +9,19 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatDate(date: Date | string) {
   if (typeof date === 'string') {
-    date = new Date(date)
+    const dateString = date.match('Z') ? date : `${date}Z`;
+    date = new Date(dateString).toLocaleString('en-US', { timeZone: defaultTimeZone });
+    date = new Date(date);
   }
-  return new Intl.DateTimeFormat('en-US').format(date)
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  }).format(date)
 }
 
 export function generateBarcodeNumbers(input: string) {

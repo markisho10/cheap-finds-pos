@@ -52,6 +52,7 @@ import {
 import Link from "next/link";
 import { Combobox } from "@/components/ui/combobox";
 import { toast } from "react-toastify";
+import { formatDate } from "@/lib/utils";
 
 type Order = {
   id: number;
@@ -336,7 +337,7 @@ export default function OrdersPage() {
                     {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(order.total_amount)}
                   </TableCell>
                   <TableCell>{order.status}</TableCell>
-                  <TableCell>{order.created_at}</TableCell>
+                  <TableCell>{formatDate(order.created_at)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       {/*<Button
