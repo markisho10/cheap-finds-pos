@@ -210,9 +210,9 @@ export default function Products() {
                 </strong>
               </p>
               <Barcode 
-                width={1} 
+                width={1.2} 
                 value={generateBarcodeNumbers((selectedProductId || 0).toString())} 
-                fontSize={12}  
+                fontSize={18}  
               />
             </div>
           )
