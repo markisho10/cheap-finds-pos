@@ -205,7 +205,9 @@ export default function Products() {
               <p>{productName}</p>
               <p>
                 <strong>{`Price: `}</strong>
-                {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(productPrice)}
+                <strong>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(productPrice)}
+                </strong>
               </p>
               <Barcode 
                 width={1.6} 
