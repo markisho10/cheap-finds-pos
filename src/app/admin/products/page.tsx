@@ -54,7 +54,7 @@ import {
 } from "@/components/ui/select";
 import { BARCODE_TITLE, categories } from "@/app/global";
 import Barcode from 'react-barcode';
-import { generateBarcodeNumbers } from "@/lib/utils";
+import { generateBarcodeNumbers, productIdToLightHexColorWithContrast } from "@/lib/utils";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import { InputNumber } from "rsuite";
@@ -198,7 +198,7 @@ export default function Products() {
         card = [
           ...card,
           (
-            <div className="barcode-card" key={i}>
+            <div className="barcode-card" style={{backgroundColor: productIdToLightHexColorWithContrast(selectedProductId || 0)}} key={i}>
               <p>
                 <strong>{BARCODE_TITLE}</strong>
               </p>
@@ -212,7 +212,8 @@ export default function Products() {
               <Barcode 
                 width={1.2} 
                 value={generateBarcodeNumbers((selectedProductId || 0).toString())} 
-                fontSize={18}  
+                fontSize={18}
+                background={productIdToLightHexColorWithContrast(selectedProductId || 0)}
               />
             </div>
           )
