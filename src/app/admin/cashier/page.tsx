@@ -31,7 +31,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { EllipsisVerticalIcon, Loader2Icon } from "lucide-react";
-import { useState, useEffect, useCallback, SyntheticEvent } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { formatDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,7 +42,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DateRangePicker } from 'rsuite';
-import { DateRange } from "rsuite/esm/DateRangePicker";
 
 type TransactionType = "income" | "expense";
 
@@ -137,7 +136,6 @@ export default function Cashier() {
   const fetchTransactions = async () => {
       setLoading(true);
       try {
-        console.log(dateValues);
         const [startDate, endDate] = dateValues;
         const params = new URLSearchParams({
           'startDate': startDate.toISOString(),

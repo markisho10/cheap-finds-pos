@@ -23,6 +23,8 @@ export async function GET(request: Request) {
         name
       )
       `)
+    .order('id', { ascending: false })
+    .limit(200)
     .eq('user_uid', user.id)
 
   if (error) {

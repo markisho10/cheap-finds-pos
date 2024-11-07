@@ -19,14 +19,16 @@ export async function GET(request: Request) {
       month: 'numeric',
       day: 'numeric',
       year: 'numeric',
+      timeZone: 'UTC'
     }
-    const startDate = new Intl.DateTimeFormat('en-US', dateOptions).format(new Date(startDateParam));
-    const endDate = new Intl.DateTimeFormat('en-US', dateOptions).format(new Date(endDateParam));
+    const startDate = new Intl.DateTimeFormat('en-US', dateOptions).format(new Date(startDateParam || Date.now()));
+    const endDate = new Intl.DateTimeFormat('en-US', dateOptions).format(new Date(endDateParam || Date.now()));
     const { data, error } = await supabase
     .from('transactions')
     .select('*')
     .eq('user_uid', user.id)
     .limit(100)
+    .order('id', { ascending: false })
     .gte('created_at', `${startDate} 00:00:00`)
     .lte('created_at', `${endDate} 23:59:59`)
 

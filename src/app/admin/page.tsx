@@ -5,8 +5,6 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-  CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
 import {
   ChartTooltipContent,
@@ -14,7 +12,7 @@ import {
   ChartContainer,
   ChartConfig,
 } from "@/components/ui/chart";
-import { Loader2Icon, TrendingUp } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import {
   Pie,
   PieChart,
@@ -25,6 +23,8 @@ import {
   Line,
   LineChart,
 } from "recharts";
+import { DateRangePicker } from "rsuite";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -35,50 +35,63 @@ export default function Page() {
   const [expensesByCategory, setExpensesByCategory] = useState({});
   const [profitMargin, setProfitMargin] = useState([]);
   const [loading, setLoading] = useState(true);
+  const yesterDate = new Date();
+  yesterDate.setDate(yesterDate.getDate() - 7);
+  const [ dateValues, setDateValues] = useState<any>([
+    yesterDate,
+    new Date()
+  ]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [startDate, endDate] = dateValues;
+      const params = new URLSearchParams({
+        'startDate': startDate.toISOString(),
+        'endDate': endDate.toISOString(),
+      });
+      const [
+        revenueRes,
+        expensesRes,
+        profitRes,
+        cashFlowRes,
+        revenueByCategoryRes,
+        expensesByCategoryRes,
+        profitMarginRes
+      ] = await Promise.all([
+        fetch(`/api/admin/revenue/total?${params}`),
+        fetch(`/api/admin/expenses/total?${params}`),
+        fetch(`/api/admin/profit/total?${params}`),
+        fetch(`/api/admin/cashflow?${params}`),
+        fetch(`/api/admin/revenue/category?${params}`),
+        fetch(`/api/admin/expenses/category?${params}`),
+        fetch(`/api/admin/profit/margin?${params}`)
+      ]);
+
+      const revenue = await revenueRes.json();
+      const expenses = await expensesRes.json();
+      const profit = await profitRes.json();
+      const cashFlowData = await cashFlowRes.json();
+      const revenueByCategoryData = await revenueByCategoryRes.json();
+      const expensesByCategoryData = await expensesByCategoryRes.json();
+      const profitMarginData = await profitMarginRes.json();
+
+      setTotalRevenue(revenue.totalRevenue);
+      setTotalExpenses(expenses.totalExpenses);
+      setTotalProfit(profit.totalProfit);
+      setCashFlow(Object.entries(cashFlowData.cashFlow).map(([date, amount]) => ({ date, amount })));
+      setRevenueByCategory(revenueByCategoryData.revenueByCategory);
+      setExpensesByCategory(expensesByCategoryData.expensesByCategory);
+      setProfitMargin(profitMarginData.profitMargin);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [
-          revenueRes,
-          expensesRes,
-          profitRes,
-          cashFlowRes,
-          revenueByCategoryRes,
-          expensesByCategoryRes,
-          profitMarginRes
-        ] = await Promise.all([
-          fetch('/api/admin/revenue/total'),
-          fetch('/api/admin/expenses/total'),
-          fetch('/api/admin/profit/total'),
-          fetch('/api/admin/cashflow'),
-          fetch('/api/admin/revenue/category'),
-          fetch('/api/admin/expenses/category'),
-          fetch('/api/admin/profit/margin')
-        ]);
-
-        const revenue = await revenueRes.json();
-        const expenses = await expensesRes.json();
-        const profit = await profitRes.json();
-        const cashFlowData = await cashFlowRes.json();
-        const revenueByCategoryData = await revenueByCategoryRes.json();
-        const expensesByCategoryData = await expensesByCategoryRes.json();
-        const profitMarginData = await profitMarginRes.json();
-
-        setTotalRevenue(revenue.totalRevenue);
-        setTotalExpenses(expenses.totalExpenses);
-        setTotalProfit(profit.totalProfit);
-        setCashFlow(Object.entries(cashFlowData.cashFlow).map(([date, amount]) => ({ date, amount })));
-        setRevenueByCategory(revenueByCategoryData.revenueByCategory);
-        setExpensesByCategory(expensesByCategoryData.expensesByCategory);
-        setProfitMargin(profitMarginData.profitMargin);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -92,6 +105,14 @@ export default function Page() {
 
   return (
     <div className="grid flex-1 items-start gap-4">
+      <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        <DateRangePicker
+          value={dateValues}
+          onChange={setDateValues}
+          format="MMM dd yyyy" character=" – "
+        />
+        <Button className="bg-primary w-40" onClick={fetchData}>Filter</Button>
+      </div>
       <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
