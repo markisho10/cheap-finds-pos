@@ -225,7 +225,12 @@ export default function CustomersPage() {
       if (response.ok) {
         toast.success('Customer deleted successfully.')
       } else {
-        toast.error('Error deleting customer.')
+        const responseJson = await response.json();
+        if (responseJson.code == 23503) {
+          toast.error('This customer cannot be deleted as they are associated with past orders.')
+        } else {
+          toast.error(`${responseJson.error}`)
+        }
         throw new Error("Error deleting customer");
       }
 
