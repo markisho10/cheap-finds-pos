@@ -184,9 +184,16 @@ export default function CustomersPage() {
       if (response.ok) {
         toast.success('Customer updated successfully.');
       } else {
-        toast.error('Error updating customer.')
+        const responseJson = await response.json();
+        if (responseJson.code == 23505) {
+          toast.error('Email already exists.')
+        } else {
+          toast.error(`${responseJson.error}`)
+        }
+
         throw new Error("Error updating customer");
       }
+      
 
       const updatedCustomerData = await response.json();
       setCustomers(

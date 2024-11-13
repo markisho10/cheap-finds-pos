@@ -24,7 +24,7 @@ export async function PUT(
     .select()
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error.message, code: error.code || 0 }, { status: 500 })
   }
 
   if (data.length === 0) {
