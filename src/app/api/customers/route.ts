@@ -15,9 +15,10 @@ export async function GET(request: Request) {
 
   let query = supabase
     .from('customers')
-    .select('id, name, status')
+    .select('*')
     .ilike('name', `%${searchQuery}%`)
     .eq('user_uid', user.id)
+    .order('created_at', { ascending: true })
     .limit(50);
 
   if (status !== 'all') {
