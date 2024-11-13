@@ -27,6 +27,7 @@ CREATE TABLE customers (
     status VARCHAR(20) CHECK (status IN ('active', 'inactive')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX idx_customers_name ON customers(name);
 
 -- Create Orders table
 CREATE TABLE orders (

@@ -2,6 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const searchQuery = searchParams.get('query') || '';
+  const status = searchParams.get('status') || 'all';
   const supabase = createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -10,12 +13,21 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('customers')
-    .select('id, name')
+    .select('id, name, status')
+    .ilike('name', `%${searchQuery}%`)
     .eq('user_uid', user.id)
+    .limit(50);
+
+  if (status !== 'all') {
+    query = query.eq('status', status)
+  }
+
+  const { data, error } = await query;
 
   if (error) {
+    console.log(error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
@@ -41,7 +53,7 @@ export async function POST(request: Request) {
     .select()
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error.message, code: error.code || 0 }, { status: 500 })
   }
 
   return NextResponse.json(data[0])

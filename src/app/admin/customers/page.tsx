@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, KeyboardEventHandler, KeyboardEvent } from "react";
 import {
   Card,
   CardContent,
@@ -51,6 +51,7 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "react-toastify";
+import { Badge } from "@/components/ui/badge";
 
 type Customer = {
   id: number;
@@ -63,6 +64,7 @@ type Customer = {
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState('all');
   const [error, setError] = useState<string | null>(null);
   const [showNewCustomerDialog, setShowNewCustomerDialog] = useState(false);
   const [newCustomerName, setNewCustomerName] = useState("");
@@ -86,37 +88,28 @@ export default function CustomersPage() {
     null
   );
 
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const response = await fetch("/api/customers");
-        if (!response.ok) {
-          throw new Error("Failed to fetch customers");
-        }
-        const data = await response.json();
-        setCustomers(data);
-      } catch (error) {
-        setError((error as Error).message);
-      } finally {
-        setLoading(false);
+  const fetchCustomers = async () => {
+    try {
+      const params = new URLSearchParams({
+        'query': searchTerm,
+        'status': status.toLowerCase()
+      });
+      const response = await fetch(`/api/customers?${params}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch customers");
       }
-    };
+      const data = await response.json();
+      setCustomers(data);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchCustomers();
   }, []);
-
-  const filteredCustomers = useMemo(() => {
-    return customers.filter((customer) => {
-      if (filters.status !== "all" && customer.status !== filters.status) {
-        return false;
-      }
-      return (
-        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.phone.includes(searchTerm)
-      );
-    });
-  }, [customers, filters.status, searchTerm]);
 
   const resetSelectedCustomer = () => {
     setSelectedCustomerId(null);
@@ -145,7 +138,13 @@ export default function CustomersPage() {
       if (response.ok) {
         toast.success('New customer added.')
       } else {
-        toast.error('Error creating customer.')
+        const responseJson = await response.json();
+        if (responseJson.code == 23505) {
+          toast.error('Email already exists.')
+        } else {
+          toast.error(`${responseJson.error}`)
+        }
+        
         throw new Error("Error creating customer");
       }
 
@@ -231,15 +230,18 @@ export default function CustomersPage() {
     }
   }, [customerToDelete, customers]);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+  const handleSearch = () => {
+    setLoading(true);
+    fetchCustomers();
   };
+  const handleKeyDown = (e: any) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  }
 
   const handleFilterChange = (value: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      status: value,
-    }));
+    setStatus(value)
   };
 
   if (loading) {
@@ -273,8 +275,9 @@ export default function CustomersPage() {
                 type="text"
                 placeholder="Search customers..."
                 value={searchTerm}
-                onChange={handleSearch}
-                className="pr-8"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="pr-12"
               />
               <SearchIcon className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             </div>
@@ -282,32 +285,34 @@ export default function CustomersPage() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-1">
                   <FilterIcon className="w-4 h-4" />
-                  <span>Filters</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuCheckboxItem
-                  checked={filters.status === "all"}
+                  checked={status === "all"}
                   onCheckedChange={() => handleFilterChange("all")}
                 >
                   All Statuses
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem
-                  checked={filters.status === "active"}
+                  checked={status === "active"}
                   onCheckedChange={() => handleFilterChange("active")}
                 >
                   Active
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem
-                  checked={filters.status === "inactive"}
+                  checked={status === "inactive"}
                   onCheckedChange={() => handleFilterChange("inactive")}
                 >
                   Inactive
                 </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <div>
+              <Button className="bg-primary w-40" onClick={handleSearch}>Search</Button>
+            </div>
           </div>
           <Button size="sm" onClick={() => setShowNewCustomerDialog(true)}>
             <PlusCircle className="w-4 h-4 mr-2" />
@@ -328,12 +333,22 @@ export default function CustomersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCustomers.map((customer) => (
+              {customers.map((customer) => (
                 <TableRow key={customer.id}>
                   <TableCell>{customer.name}</TableCell>
                   <TableCell>{customer.email}</TableCell>
                   <TableCell>{customer.phone}</TableCell>
-                  <TableCell>{customer.status}</TableCell>
+                  <TableCell>
+                  <Badge
+                      variant={
+                        customer.status === "active"
+                          ? "income"
+                          : "expense"
+                      }
+                    >
+                      {customer.status}
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Button
@@ -449,7 +464,7 @@ export default function CustomersPage() {
               Cancel
             </Button>
             <Button
-              disabled={newCustomerName === '' || newCustomerEmail === ''}
+              disabled={!newCustomerName || !newCustomerEmail}
               onClick={
                 showNewCustomerDialog ? handleAddCustomer : handleEditCustomer
               }

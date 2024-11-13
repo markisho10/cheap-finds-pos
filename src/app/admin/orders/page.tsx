@@ -133,8 +133,8 @@ export default function OrdersPage() {
         return false;
       }
       return (
-        order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.id.toString().includes(searchTerm)
+        (order.customer.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (order.id || '').toString().includes(searchTerm)
       );
     });
   }, [orders, filters.status, searchTerm]);
