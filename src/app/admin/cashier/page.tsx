@@ -198,10 +198,7 @@ export default function Cashier() {
                 <TableHead>Date</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead></TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -253,14 +250,18 @@ export default function Cashier() {
                   </TableCell>
                 </TableRow>
               ))}
-              <TableRow>
-                <TableCell>New</TableCell>
+              <TableRow className="bg-blue-200 hover:bg-blue-200">
+                <TableCell>
+                  <Badge variant="outline" className="bg-sky-600 text-white">New</Badge>
+                </TableCell>
                 <TableCell>
                   <Input
                     name="description"
                     value={newTransaction.description}
                     onChange={handleInputChange}
                     placeholder="Description"
+                    className="border-y border-slate-900 bg-blue-100"
+                    maxLength={1000}
                   />
                 </TableCell>
                 <TableCell>
@@ -269,6 +270,7 @@ export default function Cashier() {
                     value={newTransaction.category}
                     onChange={handleInputChange}
                     placeholder="Category"
+                    className="border-y border-slate-900 bg-blue-100"
                   />
                 </TableCell>
                 <TableCell>
@@ -281,7 +283,7 @@ export default function Cashier() {
                       })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="border-y border-slate-900 bg-blue-100">
                       <SelectValue placeholder="Theme" />
                     </SelectTrigger>
                     <SelectContent>
@@ -298,6 +300,7 @@ export default function Cashier() {
                     value={newTransaction.amount}
                     onChange={handleInputChange}
                     placeholder="Amount"
+                    className="border-y border-slate-900 bg-blue-100"
                   />
                 </TableCell>
                 <TableCell>
@@ -310,7 +313,7 @@ export default function Cashier() {
                       })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="border-y border-slate-900 bg-blue-100">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
