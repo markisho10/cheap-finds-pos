@@ -86,6 +86,7 @@ type OrderItem = {
 };
 
 export default function OrdersPage() {
+  const zeroPaddingOrderID = 7;
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewOrderLoading, setViewOrderLoading] = useState(false);
@@ -171,7 +172,7 @@ export default function OrdersPage() {
       }
       return (
         (order.customer.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (order.id || '').toString().includes(searchTerm)
+        String((order.id || '')).padStart(zeroPaddingOrderID, "0").toString().includes(searchTerm)
       );
     });
   }, [orders, filters.status, searchTerm]);
@@ -368,7 +369,7 @@ export default function OrdersPage() {
             <TableBody>
               {filteredOrders.map((order) => (
                 <TableRow key={order.id}>
-                  <TableCell>{String(order.id).padStart(6, "0")}</TableCell>
+                  <TableCell>{String(order.id).padStart(zeroPaddingOrderID, "0")}</TableCell>
                   <TableCell>{order.customer.name}</TableCell>
                   <TableCell>
                     {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(order.total_amount)}
@@ -558,8 +559,12 @@ export default function OrdersPage() {
               ) : (
                   <div>
                     <DialogHeader>
-                      <DialogTitle>Order No. {String(viewOrderId).padStart(6, "0")}</DialogTitle>
+                      <DialogTitle>Order Details</DialogTitle>
                       <div className="view-order-items-customer">
+                        <p>
+                          <strong>Order No.: </strong>
+                          <span>{String(viewOrderId).padStart(zeroPaddingOrderID, "0")}</span>
+                        </p>
                         <p>
                           <strong>Customer: </strong>
                           <span>{viewOrderCustomerName}</span>
