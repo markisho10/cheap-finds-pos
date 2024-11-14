@@ -388,33 +388,34 @@ export default function Products() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Barcode</TableHead>
+                  <TableHead className="text-center">Barcode</TableHead>
                   <TableHead>Product</TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="text-center">Price</TableHead>
+                  <TableHead className="text-center">Stock</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {currentProducts.map((product) => (
                   <TableRow key={product.id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium w-40" align="center">
                       <Barcode 
                         renderer="svg"
-                        width={1} 
+                        width={0.8} 
                         height={40} 
-                        fontSize={12} 
+                        fontSize={10} 
+                        background="none"
                         value={generateBarcodeNumbers(product.id.toString())} />  
                     </TableCell>
                     <TableCell className="font-medium">
                       {product.name}
                     </TableCell>
                     <TableCell>{product.description}</TableCell>
-                    <TableCell>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(product.price)}</TableCell>
-                    <TableCell>{product.in_stock}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
+                    <TableCell align="center">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(product.price)}</TableCell>
+                    <TableCell align="center">{product.in_stock}</TableCell>
+                    <TableCell align="center">
+                      <div className="flex justify-center items-center gap-2">
                         <Button
                           size="icon"
                           variant="ghost"
