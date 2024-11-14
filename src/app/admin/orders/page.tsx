@@ -559,7 +559,7 @@ export default function OrdersPage() {
                   <div>
                     <DialogHeader>
                       <DialogTitle>Order No. {String(viewOrderId).padStart(6, "0")}</DialogTitle>
-                      <div>
+                      <div className="view-order-items-customer">
                         <p>
                           <strong>Customer: </strong>
                           <span>{viewOrderCustomerName}</span>
@@ -571,24 +571,23 @@ export default function OrdersPage() {
                         <TableHeader>
                           <TableRow>
                             <TableHead>Product name</TableHead>
-                            <TableHead>Price</TableHead>
-                            <TableHead>Quantity</TableHead>
-                            <TableHead>Subtotal</TableHead>
+                            <TableHead className="text-center">Price</TableHead>
+                            <TableHead className="text-center">Quantity</TableHead>
+                            <TableHead className="text-center">Subtotal</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          
                           {viewOrderItems.map((orderItem) => {
                             const subTotal = orderItem.price * orderItem.quantity;
                             grandTotal += subTotal;
                             return (
                               <TableRow key={orderItem.id}>
                                 <TableCell>{orderItem.product.name}</TableCell>
-                                <TableCell>
+                                <TableCell align="center">
                                   {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(orderItem.price)}
                                 </TableCell>
-                                <TableCell>{orderItem.quantity}</TableCell>
-                                <TableCell>
+                                <TableCell align="center">{orderItem.quantity}</TableCell>
+                                <TableCell align="center">
                                   {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(subTotal)}
                                 </TableCell>
                               </TableRow>

@@ -63,6 +63,9 @@
     height: 400px;
     overflow-y: scroll;
   }
+  .view-order-items-customer {
+    padding: 10px 0;
+  }
   .print-viewer { 
     display: none;
   }
