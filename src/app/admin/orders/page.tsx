@@ -49,10 +49,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
-import Link from "next/link";
 import { Combobox } from "@/components/ui/combobox";
 import { toast } from "react-toastify";
 import { formatDate } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type Order = {
   id: number;
@@ -70,17 +70,37 @@ type Customer = {
   name: string;
 };
 
+type OrderItem = {
+  id: number;
+  order_id: number;
+  product_id: number;
+  quantity: number;
+  price: number;
+  order: {
+    id: number
+  };
+  product: {
+    id: number,
+    name: string
+  }
+};
+
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewOrderLoading, setViewOrderLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showNewOrderDialog, setShowNewOrderDialog] = useState(false);
   const [newOrderCustomerName, setNewOrderCustomerName] = useState("");
+  const [viewOrderId, setViewOrderId] = useState<number | null>(null);
+  const [viewOrderCustomerName, setViewOrderCustomerName] = useState<string | null>(null);
+  const [viewOrderItems, setViewOrderItems] = useState<OrderItem[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [newOrderTotal, setNewOrderTotal] = useState("");
   const [newOrderStatus, setNewOrderStatus] = useState<"completed" | "pending" | "cancelled">("pending");
   const [isEditOrderDialogOpen, setIsEditOrderDialogOpen] = useState(false);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [isViewOrderOpen, setIsViewOrderOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
@@ -88,6 +108,7 @@ export default function OrdersPage() {
   });
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  let grandTotal = 0;
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -119,6 +140,22 @@ export default function OrdersPage() {
       console.error("Error fetching customers:", error);
     }
   };
+
+  const fetchOrderItems = async (id: number | string) => {
+    setViewOrderLoading(true)
+    try {
+      const response = await fetch(`/api/order-items/${id}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch order items");
+      }
+      const data = await response.json();
+      setViewOrderItems(data);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setViewOrderLoading(false);
+    }
+  }
 
   const handleSelectCustomer = (customerId: number | string) => {
     const customer = customers.find((c) => c.id === customerId);
@@ -320,7 +357,7 @@ export default function OrdersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Order ID</TableHead>
+                <TableHead>Order No.</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Total</TableHead>
                 <TableHead>Status</TableHead>
@@ -331,7 +368,7 @@ export default function OrdersPage() {
             <TableBody>
               {filteredOrders.map((order) => (
                 <TableRow key={order.id}>
-                  <TableCell>{order.id}</TableCell>
+                  <TableCell>{String(order.id).padStart(6, "0")}</TableCell>
                   <TableCell>{order.customer.name}</TableCell>
                   <TableCell>
                     {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(order.total_amount)}
@@ -354,23 +391,43 @@ export default function OrdersPage() {
                         <FilePenIcon className="w-4 h-4" />
                         <span className="sr-only">Edit</span>
                       </Button>*/}
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => {
-                          setOrderToDelete(order);
-                          setIsDeleteConfirmationOpen(true);
-                        }}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        <span className="sr-only">Delete</span>
-                      </Button>
-                      {/*<Link href={`/admin/orders/${order.id}`} prefetch={false}>
-                        <Button size="icon" variant="ghost">
-                          <EyeIcon className="w-4 h-4" />
-                          <span className="sr-only">View</span>
-                        </Button>
-                      </Link>*/}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="icon" 
+                              variant="default"
+                              onClick={() => { 
+                                setIsViewOrderOpen(true);
+                                setViewOrderId(order.id);
+                                setViewOrderCustomerName(order.customer.name)
+                                fetchOrderItems(order.id)
+                              }}
+                            >
+                              <EyeIcon className="w-4 h-4" />
+                              <span className="sr-only">View</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">View Order Details</TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="destructive"
+                              onClick={() => {
+                                setOrderToDelete(order);
+                                setIsDeleteConfirmationOpen(true);
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              <span className="sr-only">Delete</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">Delete Order</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -485,6 +542,70 @@ export default function OrdersPage() {
             </Button>
           </DialogFooter>
         </DialogContent>
+      </Dialog>
+      
+      <Dialog
+        open={isViewOrderOpen}
+        onOpenChange={setIsViewOrderOpen}
+      >
+          <DialogContent>
+            {
+              (viewOrderLoading)
+              ? (
+                <div className="h-[30vh] flex items-center justify-center">
+                  <Loader2Icon className="mx-auto h-12 w-12 animate-spin" />
+                </div>
+              ) : (
+                  <div>
+                    <DialogHeader>
+                      <DialogTitle>Order No. {String(viewOrderId).padStart(6, "0")}</DialogTitle>
+                      <div>
+                        <p>
+                          <strong>Customer: </strong>
+                          <span>{viewOrderCustomerName}</span>
+                        </p>
+                      </div>
+                    </DialogHeader>
+                    <div className="view-order-content">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Product name</TableHead>
+                            <TableHead>Price</TableHead>
+                            <TableHead>Quantity</TableHead>
+                            <TableHead>Subtotal</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          
+                          {viewOrderItems.map((orderItem) => {
+                            const subTotal = orderItem.price * orderItem.quantity;
+                            grandTotal += subTotal;
+                            return (
+                              <TableRow key={orderItem.id}>
+                                <TableCell>{orderItem.product.name}</TableCell>
+                                <TableCell>
+                                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(orderItem.price)}
+                                </TableCell>
+                                <TableCell>{orderItem.quantity}</TableCell>
+                                <TableCell>
+                                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(subTotal)}
+                                </TableCell>
+                              </TableRow>
+                            )
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                    <DialogFooter>
+                      <h5>
+                        Grand total: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(grandTotal)}
+                      </h5>
+                    </DialogFooter>
+                  </div>
+              )
+            }
+          </DialogContent>
       </Dialog>
     </Card>
   );

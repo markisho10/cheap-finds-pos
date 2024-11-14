@@ -58,6 +58,11 @@
     --chart-5: 340 75% 55%;
   }
 
+  .view-order-content {
+    width: 100%;
+    height: 400px;
+    overflow-y: scroll;
+  }
   .print-viewer { 
     display: none;
   }

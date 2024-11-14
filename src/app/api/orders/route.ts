@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       customer:customer_id (
         name
       )
-      `)
+    `)
     .order('id', { ascending: false })
     .limit(200)
     .eq('user_uid', user.id)
