@@ -571,24 +571,24 @@ export default function OrdersPage() {
                         <TableHeader>
                           <TableRow>
                             <TableHead>Product name</TableHead>
-                            <TableHead className="text-center">Price</TableHead>
                             <TableHead className="text-center">Quantity</TableHead>
-                            <TableHead className="text-center">Subtotal</TableHead>
+                            <TableHead className="text-center">Unit Price</TableHead>
+                            <TableHead className="text-center">Amount</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {viewOrderItems.map((orderItem) => {
-                            const subTotal = orderItem.price * orderItem.quantity;
-                            grandTotal += subTotal;
+                            const amount = orderItem.price * orderItem.quantity;
+                            grandTotal += amount;
                             return (
                               <TableRow key={orderItem.id}>
                                 <TableCell>{orderItem.product.name}</TableCell>
+                                <TableCell align="center">{orderItem.quantity}</TableCell>
                                 <TableCell align="center">
                                   {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(orderItem.price)}
                                 </TableCell>
-                                <TableCell align="center">{orderItem.quantity}</TableCell>
                                 <TableCell align="center">
-                                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(subTotal)}
+                                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(amount)}
                                 </TableCell>
                               </TableRow>
                             )
@@ -597,9 +597,12 @@ export default function OrdersPage() {
                       </Table>
                     </div>
                     <DialogFooter>
-                      <h5>
-                        Grand total: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(grandTotal)}
-                      </h5>
+                      <div className="order-item-total">
+                        <h5>
+                          <span>Total: </span>
+                          <span>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(grandTotal)}</span>
+                        </h5>
+                      </div>
                     </DialogFooter>
                   </div>
               )

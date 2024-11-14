@@ -66,6 +66,9 @@
   .view-order-items-customer {
     padding: 10px 0;
   }
+  .order-item-total {
+    padding-top: 10px;
+  }
   .print-viewer { 
     display: none;
   }
