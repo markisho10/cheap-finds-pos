@@ -25,6 +25,7 @@ import {
 } from "recharts";
 import { DateRangePicker } from "rsuite";
 import { Button } from "@/components/ui/button";
+import { formatDateforURL } from "@/lib/utils";
 
 export default function Page() {
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -47,8 +48,8 @@ export default function Page() {
       setLoading(true);
       const [startDate, endDate] = dateValues;
       const params = new URLSearchParams({
-        'startDate': startDate.toISOString(),
-        'endDate': endDate.toISOString(),
+        'startDate': `${formatDateforURL(startDate)}`,
+        'endDate': `${formatDateforURL(endDate)}`
       });
       const [
         revenueRes,

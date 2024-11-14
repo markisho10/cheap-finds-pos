@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dialog";
 import { EllipsisVerticalIcon, Loader2Icon } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateforURL } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -138,8 +138,8 @@ export default function Cashier() {
       try {
         const [startDate, endDate] = dateValues;
         const params = new URLSearchParams({
-          'startDate': startDate.toISOString(),
-          'endDate': endDate.toISOString(),
+          'startDate': `${formatDateforURL(startDate)}`,
+          'endDate': `${formatDateforURL(endDate)}`
         });
         const response = await fetch(`/api/transactions?${params}`, {
           method: "GET",

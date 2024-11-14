@@ -24,6 +24,24 @@ export function formatDate(date: Date | string) {
   }).format(date)
 }
 
+export function formatDateforURL(date: Date) {
+  const padding = (dateChunk: string | number) => {
+    return String(dateChunk).padStart(2, '0')
+  }
+  const currentTime = new Date();
+  return `${date.getFullYear()}-${padding(date.getMonth()+1)}-${padding(date.getDate())}T${padding(currentTime.getHours())}:${padding(currentTime.getMinutes())}:${padding(currentTime.getSeconds())}`
+}
+
+export function convertDateToUTC(dateParam: string | Date | null | undefined = null) {
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: 'UTC'
+  }
+  return new Intl.DateTimeFormat('sv-SE', dateOptions).format(new Date(dateParam || Date.now()));
+}
+
 export function generateBarcodeNumbers(input: string) {
   // Generate MD5 hash in hexadecimal format and limit to 12 characters
   const md5Hash = crypto.createHash('md5').update(input).digest('hex').substring(0, 12);

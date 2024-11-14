@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { convertDateToUTC } from '@/lib/utils';
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -15,14 +16,9 @@ export async function GET(request: Request) {
   }
   
   if (startDateParam && endDateParam) {
-    const dateOptions: Intl.DateTimeFormatOptions = {
-      month: 'numeric',
-      day: 'numeric',
-      year: 'numeric',
-      timeZone: 'UTC'
-    }
-    const startDate = new Intl.DateTimeFormat('en-US', dateOptions).format(new Date(startDateParam || Date.now()));
-    const endDate = new Intl.DateTimeFormat('en-US', dateOptions).format(new Date(endDateParam || Date.now()));
+    const startDate = convertDateToUTC(startDateParam);
+    const endDate = convertDateToUTC(endDateParam);
+    console.log(startDate, endDate)
     const { data, error } = await supabase
     .from('transactions')
     .select('*')
