@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     .select('*')
     .ilike('name', `%${searchQuery}%`)
     .eq('user_uid', user.id)
-    .order('created_at', { ascending: true })
+    .order('created_at', { ascending: false })
     .limit(50);
 
   if (status !== 'all') {

@@ -32,16 +32,6 @@ export async function PUT(
     return NextResponse.json({ error: 'Product not found or not authorized' }, { status: 404 })
   }
 
-  /*const orderUpdate = await supabase
-    .from('orders')
-    .update({ ...updatedProduct, user_uid: user.id })
-    .eq('id', orderId)
-    .eq('user_uid', user.id)
-
-  if (orderUpdate.error) {
-    return NextResponse.json({ error: orderUpdate.error.message }, { status: 500 })
-  }*/
-
   return NextResponse.json(data[0])
 }
 
@@ -65,19 +55,15 @@ export async function DELETE(
     .select('*', { count: 'exact', head: true })
     .eq('product_id', productId)
 
-  if (count && count > 0) {
-    return NextResponse.json({ error: 'Product with existing orders cannot be deleted.' }, { status: 500 })
-  } else {
     const { error } = await supabase
-    .from('products')
-    .delete()
-    .eq('id', productId)
-    .eq('user_uid', user.id)
+      .from('products')
+      .update({ deleted: true })
+      .eq('id', productId)
+      .eq('user_uid', user.id)
 
     if (error) {  
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
-  }
 
   return NextResponse.json({ message: 'Product deleted successfully' })
 }

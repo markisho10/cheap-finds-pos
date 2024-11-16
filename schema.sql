@@ -80,3 +80,7 @@ $$
   where id = pid
 $$ 
 language sql volatile;
+
+-- Added deleted column for products
+ALTER TABLE products
+ADD COLUMN deleted BOOLEAN DEFAULT FALSE;

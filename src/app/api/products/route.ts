@@ -15,6 +15,7 @@ export async function GET(request: Request) {
     .from('products')
     .select('*')
     .eq('user_uid', user.id)
+    .eq('deleted', false)
     .limit(100)
 
   if (error) {
