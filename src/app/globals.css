@@ -68,6 +68,10 @@
   }
   .order-item-total {
     padding-top: 10px;
+    text-align: right;
+  }
+  .order-item-total h5{
+    font-size: 14px;
   }
   .print-viewer { 
     display: none;
