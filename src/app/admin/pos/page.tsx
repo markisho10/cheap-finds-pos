@@ -131,6 +131,11 @@ export default function POSPage() {
     0
   );
 
+  const totalQty = selectedProducts.reduce(
+    (sum, product) => sum + (product.quantity || 1),
+    0
+  );
+
   const handleCreateOrder = async () => {
     if (!selectedCustomer || !paymentMethod || selectedProducts.length === 0) {
       return;
@@ -252,6 +257,9 @@ export default function POSPage() {
             </TableBody>
           </Table>
           <div className="mt-4 text-lg text-right">
+            <strong>Quantity: {totalQty}</strong>
+          </div>
+          <div className="mt-2 text-lg text-right">
             <strong>Total: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(total)}</strong>
           </div>
           <div className="mt-4">

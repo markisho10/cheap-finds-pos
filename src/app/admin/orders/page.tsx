@@ -110,6 +110,7 @@ export default function OrdersPage() {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   let grandTotal = 0;
+  let totalQty = 0;
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -585,6 +586,7 @@ export default function OrdersPage() {
                           {viewOrderItems.map((orderItem) => {
                             const amount = orderItem.price * orderItem.quantity;
                             grandTotal += amount;
+                            totalQty += orderItem.quantity;
                             return (
                               <TableRow key={orderItem.id}>
                                 <TableCell>{orderItem.product.name}</TableCell>
@@ -603,6 +605,10 @@ export default function OrdersPage() {
                     </div>
                     <DialogFooter>
                       <div className="order-item-total">
+                        <h5>
+                          <span>Order Quantity: </span>
+                          <span>{totalQty}</span>
+                        </h5>
                         <h5>
                           <span>Total: </span>
                           <span>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(grandTotal)}</span>
